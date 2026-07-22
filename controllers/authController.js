@@ -56,10 +56,45 @@ const register = async (req, res) =>{
 }
 
 
-
 //@desc     Login an user
 //@route    POST/api/v1/auth/login
 //@access   Public
 //Fonction  login
+const login = async (req, res)=> {
+    try {
+        const {email, password} = req.body
 
-module.exports = {register}
+        if(!email || !password){
+            return res.status(400).json({ message : 'Please provide email and password'})
+        }
+
+        //Verify if email exisits
+        const user =  await User.findOne({email}).select('+password')
+
+        if(!user){
+            return res.status(401).json({ message: 'Invalid credentials'})
+        }
+
+        //Check password
+        const isMatch = await user.comparePassword(password)
+        if(!isMatch){
+            return res.status(401).json({ message: 'Invalid credentials'})
+        }
+
+        const token = generateToken(user._id)
+
+        res.status(200).json({
+            message: ' Login successfully',
+            token,
+            user:{
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            }
+        })
+    } catch (err) {
+        res.status(500).json({ message: "Server error during login", error: err.message})
+    }
+}
+module.exports = { register, login }
