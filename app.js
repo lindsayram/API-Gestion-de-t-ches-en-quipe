@@ -1,7 +1,17 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = 3001
+//Utilisation des variables sur .env
+require('dotenv').config()
+//Connexion à MongoDB
+require('./config/db')
 
+//Import des routes
+const authRoutes = require('./routes/authRoutes')
+
+app.use(express.json())
+
+app.use('/api/v1/auth', authRoutes)
 //       URL
 app.get('/', (req, res) =>{
     res.send('Bienvenue sur mon API RESTful !')

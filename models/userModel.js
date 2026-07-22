@@ -18,8 +18,7 @@ const userSchema = new mongoose.Schema (
         password: {
             type: String,
             required: [true, 'Password is required'],
-            trim: true,
-            minlength: [6, 'Minlength is too short'],
+            minlength: 6,
             select: false,
         },
         role: {
@@ -35,8 +34,7 @@ const userSchema = new mongoose.Schema (
 
 //Hash password
 userSchema.pre('save', async function (){
-    if(!this.isModified(password))
-        return
+    if(!this.isModified('password')) return
     const salt = await bcrypt.genSalt(10)
     this.password = await bcrypt.hash(this.password, salt)
 })
