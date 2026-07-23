@@ -38,13 +38,13 @@ const register = async (req, res) =>{
             role: role || 'user'
         })
 
-        const token = generateToken(user.id)
+        const token = generateToken(user._id)
 
         res.status(201).json({ 
             message : 'You are registered',
             token,
             user: {
-                id: user.id,
+                id: user._id,
                 name: user.name,
                 email: user.email,
                 role: user.role

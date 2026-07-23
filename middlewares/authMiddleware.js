@@ -12,13 +12,14 @@ const authMiddleware = async (req, res, next) => {
         }
 
         if(!token){
-            return res.status(401).json({message :'Not authorized, invalid token'})
+            return res.status(401).json({message :'Not authorized, token missing'})
         }
 
         //Verify token
         const decoded = jwt.verify(token, JWT_SECRET)
 
         //Get user from token payload
+        const user = await User.findById(decoded.id)
         if(!user){
             return res.status(401).json({message: 'User no longer exists'})
         }

@@ -9,11 +9,13 @@ require('./config/db')
 //Import des routes
 const authRoutes = require('./routes/authRoutes')
 const userRoutes = require('./routes/userRoutes')
+const projectRoutes = require('./routes/projectRoutes')
 
 app.use(express.json())
 
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/users', userRoutes)
+app.use('/api/v1/projects', projectRoutes)
 
 //       URL
 app.get('/', (req, res) =>{
