@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const Project = require('../models/projectModel')
+const User = require('../models/userModel')
 // const JWT_SECRET = process.env.JWT_SECRET
 
 //Create a project US3
@@ -15,7 +16,7 @@ const registerProject = async (req, res) => {
         const project = await Project.create({
             title,
             description,
-            creator: req.user.id
+            creator: req.user._id
         })
         
         res.status(201).json({
@@ -42,24 +43,41 @@ const updateProject = async (req, res) => {
             return res.status(404).json({ message: 'Project is not found'})
         }
 
-        const collaborator = req.body.collaborator
-        
-        if(collaborator != null){
-            project.collaborator.push(collaborator)
+        const email = req.body.email
+
+        // Champ ne doit pas être vide
+        if(email == null) {
+            return res.status(400).json({ message : 'Please provide a collaborator'})
         }
 
-        const exisitingCollaborator = await Project.findOne({collaborator})
-        if(exisitingCollaborator){
-            return res.status(400).json({ message: 'This collaborator already participate'})
+        // Vérifier dans le projet si le collaborateur est déjà present
+        if(project.collaborator.includes(email)){
+            return res.status(400).json({ message: 'This collaborator already exists'})
         }
+
+        project.collaborator.push(email)  //save id
+        const newProject = await project.save()
+        res.json(newProject)
         
-        const updateProject = await project.save()
-        res.json(updateProject)
     } catch (err) {
         res.status(400).json({message: err.message})
     }
 }
 
-//Consulter les projets auquels je participe
+//Consulter les projets auquels je participe (membre et créateur) US5
+const getMyProject = async (req, res) =>{
+    try {
+        const projects = await Project.find({
+            $or: [ 
+                {creator: req.user._id},
+                {collaborator: req.user.email}
+            ]
+        })
+        res.status(200).json(projects)
 
-module.exports = {registerProject, updateProject}
+    } catch (err) {
+        res.status(500).json({error: err.message})
+    }
+}
+
+module.exports = {registerProject, updateProject, getMyProject}
