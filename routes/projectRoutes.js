@@ -4,7 +4,7 @@ const router = express.Router()
 const authMiddleware = require('../middlewares/authMiddleware')
 const { registerProject, updateProject, getMyProject } = require('../controllers/projectController')
 
-router.post('/registerProject', authMiddleware, registerProject)
+router.post('/', authMiddleware, registerProject)
 router.put('/:id', authMiddleware, updateProject)
 router.get('/', authMiddleware, getMyProject)
 

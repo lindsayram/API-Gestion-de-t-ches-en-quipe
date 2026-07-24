@@ -1,12 +1,10 @@
-const jwt = require('jsonwebtoken')
 const Project = require('../models/projectModel')
 const User = require('../models/userModel')
-// const JWT_SECRET = process.env.JWT_SECRET
 
 //Create a project US3
 const registerProject = async (req, res) => {
     try {
-        const { title, description, creator} = req.body
+        const { title, description} = req.body
 
         //Champs non vides
         if(!title || !description){
